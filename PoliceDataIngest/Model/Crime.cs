@@ -4,9 +4,6 @@ namespace PoliceDataIngest.Model;
 
 public class Crime
 {
-    [CsvColumn("Crime ID", typeof(string))]
-    public string Id { get; set; }
-    
     [CsvColumn("Month", typeof(DateTime), Format="yyyy-MM")]
     public DateTime Date { get; set; }
     
