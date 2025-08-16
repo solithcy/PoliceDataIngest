@@ -7,12 +7,12 @@ Console.WriteLine("Getting all documented street crimes");
 
 var file = await ApiService.DownloadZip(2025, 06);
 Console.WriteLine("Processing dataset archive");
-var crimes = ParseService.ParseZip(file, 0, 0);
-Console.WriteLine($"Writing {crimes.Count} crimes to database");
+Console.WriteLine($"Parsing, filtering and writing crimes to database");
+var crimeParser = new ParseService(file, 0, 0);
 var context = new PoliceDbContext();
 var existing = await context.CrimeAreas.ToDictionaryAsync(area => area.CalculateHashCode(), area => area);
 
-foreach (var crime in crimes)
+foreach (var crime in crimeParser.GetCrimes())
 {
     var crimeHashCode = CrimeArea.CalculateHashCode(crime.H3Index, crime.Date);
     if (!existing.TryGetValue(crimeHashCode, out var ca))
@@ -36,4 +36,5 @@ foreach (var crime in crimes)
     };
 }
 
+Console.WriteLine("Saving changes");
 await context.SaveChangesAsync();

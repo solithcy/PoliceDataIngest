@@ -7,41 +7,42 @@ using PoliceDataIngest.Model;
 
 namespace PoliceDataIngest.Services;
 
-public static class ParseService
+public class ParseService
 {
-    public static List<Crime> ParseZip(FileInfo file, int year, int month, bool exact = false)
-    {
-        ConcurrentBag<Crime> crimes = [];
-        ZipArchive zip = ZipFile.OpenRead(file.FullName);
+    private ZipArchive _archive;
+    private Queue<ZipArchiveEntry> _entryTasks;
+    private ConcurrentQueue<Crime> _crimes = [];
+    private int _fidx = 0;
+    private int _totalEntries;
 
-        Console.WriteLine("Filtering & batching dataset files");
-        const int batchSize = 16;
-        var batches = zip.Entries.Where(entry =>
+    public ParseService(FileInfo file, int year, int month, bool exact = false)
+    {
+        _archive = ZipFile.OpenRead(file.FullName);
+
+        Console.WriteLine("Filtering dataset files");
+
+        var entries = _archive.Entries.Where(entry =>
         {
             if (!entry.FullName.EndsWith("-street.csv")) return false;
             int fileYear = int.Parse(entry.FullName[..4]);
             int fileMonth = int.Parse(entry.FullName[5..7]);
             if (exact) return fileYear == year && fileMonth == month;
             return year <= fileYear && (year != fileYear || month <= fileMonth);
-        }).Chunk(batchSize);
+        }).ToList();
+        _entryTasks = new Queue<ZipArchiveEntry>(entries);
+        _totalEntries = _entryTasks.Count;
 
-        Console.WriteLine($"{batches.Count()} batches of {batchSize}, {batches.Sum(b=>b.Length)} total entries ({(batches.Sum(b => b.Sum(e => e.Length)) / 1024 / 1024):F2}MB)");
+        Console.WriteLine(
+            $"{entries.Count} total entries ({(entries.Sum(e => e.Length) / 1024 / 1024):F2}MB)");
+    }
 
-        int fidx = 0;
-        foreach (var batch in batches)
+    public IEnumerable<Crime> GetCrimes()
+    {
+        while (_entryTasks.TryDequeue(out var entry))
         {
-            Console.Write($"\rProcessing files {fidx+1}-{Math.Min(fidx + batchSize, fidx + batch.Length)}");
-            fidx += batch.Length;
-            batch.Select(entry =>
-            {
+            Console.Write($"\rProcessing file {++_fidx}/{_totalEntries}");
                 var stream = entry.Open();
-                var ms = new MemoryStream();
-                stream.CopyTo(ms);
-                ms.Position = 0;
-                return ms;
-            }).AsParallel().WithDegreeOfParallelism(16).ForAll(ms =>
-            { 
-                var reader = new StreamReader(ms);
+                var reader = new StreamReader(stream);
                 string[]? cols = null;
 
                 // having a shared H3Index variable should help with memory issues.. maybe
@@ -56,33 +57,31 @@ public static class ParseService
                     else
                     {
                         if (parts.Length != cols.Length) continue;
+                        Crime c;
                         try
                         {
-                            Crime c = DeserializeRow(cols, parts);
+                            c = DeserializeRow(cols, parts);
                             if (!CrimeTypes.IsCrimeType(c.CrimeType)) continue;
                             index = H3Index.FromPoint(new Point(c.Longitude, c.Latitude), 10);
                             c.H3Index = (ulong) index;
-                            crimes.Add(c);
                         }
                         catch (FormatException)
                         {
                             // assume crime had no location, as many don't
+                            continue;
                         }
+
+                        yield return c;
                     }
                 }
 
                 reader.Dispose();
-                ms.Dispose();
-            });
+                stream.Dispose();
         }
 
-        zip.Dispose();
-        
-        var list = crimes.ToList();
-        Console.WriteLine($"\nFinished processing dataset, {list.Count} entries in target range");
-
-        return list;
+        _archive.Dispose();
     }
+
 
     private static Crime DeserializeRow(string[] cols, string[] parts)
     {
