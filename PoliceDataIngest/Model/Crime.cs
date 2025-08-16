@@ -19,8 +19,8 @@ public class Crime
     [CsvColumn("Crime type", typeof(string))]
     public string CrimeType { get; set; }
     
-    [CsvColumn("Last outcome category", typeof(string))]
-    public string LastOutcome { get; set; }
+    [CsvColumn("Reported by", typeof(string))]
+    public string ReportedBy { get; set; }
 
     public ulong H3Index;
 }

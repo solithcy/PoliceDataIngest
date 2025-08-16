@@ -80,6 +80,7 @@ public class ParseService
         }
 
         _archive.Dispose();
+        Console.WriteLine();
     }
 
 
@@ -108,7 +109,7 @@ public class ParseService
 
             object convertedValue = csvAttribute.Type.Name switch
             {
-                nameof(String) => rawValue,
+                nameof(String) => string.Intern(rawValue),
                 nameof(Int32) => int.Parse(rawValue),
                 nameof(Double) => double.Parse(rawValue),
                 nameof(DateTime) => DateTime.SpecifyKind(
