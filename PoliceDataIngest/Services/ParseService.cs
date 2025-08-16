@@ -2,7 +2,7 @@
 using System.IO.Compression;
 using System.Reflection;
 using H3;
-using H3.Model;
+using NetTopologySuite.Geometries;
 using PoliceDataIngest.Model;
 
 namespace PoliceDataIngest.Services;
@@ -45,7 +45,6 @@ public static class ParseService
                 string[]? cols = null;
 
                 // having a shared H3Index variable should help with memory issues.. maybe
-                LatLng latlng = new LatLng(0, 0);
                 H3Index index;
                 while (reader.ReadLine() is { } line)
                 {
@@ -60,9 +59,8 @@ public static class ParseService
                         try
                         {
                             Crime c = DeserializeRow(cols, parts);
-                            latlng.Latitude = c.Latitude;
-                            latlng.Longitude = c.Longitude;
-                            index = H3Index.FromLatLng(latlng, 10);
+                            if (!CrimeTypes.IsCrimeType(c.CrimeType)) continue;
+                            index = H3Index.FromPoint(new Point(c.Longitude, c.Latitude), 10);
                             c.H3Index = (ulong) index;
                             crimes.Add(c);
                         }
