@@ -48,6 +48,9 @@ foreach (var crime in crimeParser.GetCrimes())
         CrimeTypes.Violent       => ca.Violent++,
         CrimeTypes.Damage        => ca.Damage++,
         CrimeTypes.Shoplifting   => ca.Shoplifting++,
+        CrimeTypes.AntiSocial    => ca.AntiSocial++,
+        CrimeTypes.Drugs         => ca.Drugs++,
+        CrimeTypes.VehicleCrime  => ca.VehicleCrime++,
         _ => (uint) 0
     };
 }

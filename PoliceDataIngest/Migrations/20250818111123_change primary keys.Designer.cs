@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PoliceDataIngest.Context;
@@ -11,9 +12,11 @@ using PoliceDataIngest.Context;
 namespace PoliceDataIngest.Migrations
 {
     [DbContext(typeof(PoliceDbContext))]
-    partial class PoliceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250818111123_change primary keys")]
+    partial class changeprimarykeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,48 +35,48 @@ namespace PoliceDataIngest.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("h3");
 
-                    b.Property<int>("AntiSocial")
-                        .HasColumnType("int")
+                    b.Property<long>("AntiSocial")
+                        .HasColumnType("bigint")
                         .HasColumnName("anti_social");
 
-                    b.Property<int>("BicycleTheft")
-                        .HasColumnType("int")
+                    b.Property<long>("BicycleTheft")
+                        .HasColumnType("bigint")
                         .HasColumnName("bicycle_theft");
 
-                    b.Property<int>("Burglary")
-                        .HasColumnType("int")
+                    b.Property<long>("Burglary")
+                        .HasColumnType("bigint")
                         .HasColumnName("burglary");
 
-                    b.Property<int>("Damage")
-                        .HasColumnType("int")
+                    b.Property<long>("Damage")
+                        .HasColumnType("bigint")
                         .HasColumnName("damage");
 
-                    b.Property<int>("Drugs")
-                        .HasColumnType("int")
+                    b.Property<long>("Drugs")
+                        .HasColumnType("bigint")
                         .HasColumnName("drugs");
 
-                    b.Property<int>("PersonalTheft")
-                        .HasColumnType("int")
+                    b.Property<long>("PersonalTheft")
+                        .HasColumnType("bigint")
                         .HasColumnName("personal_theft");
 
-                    b.Property<int>("Robbery")
-                        .HasColumnType("int")
+                    b.Property<long>("Robbery")
+                        .HasColumnType("bigint")
                         .HasColumnName("robbery");
 
-                    b.Property<int>("Shoplifting")
-                        .HasColumnType("int")
+                    b.Property<long>("Shoplifting")
+                        .HasColumnType("bigint")
                         .HasColumnName("shoplifting");
 
-                    b.Property<int>("VehicleCrime")
-                        .HasColumnType("int")
+                    b.Property<long>("VehicleCrime")
+                        .HasColumnType("bigint")
                         .HasColumnName("vehicle_crime");
 
-                    b.Property<int>("Violent")
-                        .HasColumnType("int")
+                    b.Property<long>("Violent")
+                        .HasColumnType("bigint")
                         .HasColumnName("violent");
 
-                    b.Property<int>("WeaponCrime")
-                        .HasColumnType("int")
+                    b.Property<long>("WeaponCrime")
+                        .HasColumnType("bigint")
                         .HasColumnName("weapon_crime");
 
                     b.HasKey("Date", "H3");

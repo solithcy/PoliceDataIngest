@@ -12,11 +12,15 @@ public sealed class CrimeTypes
     public const string Violent = "Violence and sexual offences";
     public const string Damage = "Criminal damage and arson";
     public const string Shoplifting = "Shoplifting";
+    public const string AntiSocial = "Anti-social behaviour";
+    public const string VehicleCrime = "Vehicle crime";
+    public const string Drugs = "Drugs";
     
     private static readonly HashSet<string> All = new(
         [
             WeaponCrime, PersonalTheft, BicycleTheft, Burglary,
-            Robbery, Violent, Damage, Shoplifting
+            Robbery, Violent, Damage, Shoplifting, AntiSocial,
+            VehicleCrime, Drugs,
         ],
         StringComparer.Ordinal
     );

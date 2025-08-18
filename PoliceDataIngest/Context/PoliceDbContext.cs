@@ -20,7 +20,7 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=police;");
+        => optionsBuilder.UseNpgsql("Host=ep-dark-rain-abo3yryy-pooler.eu-west-2.aws.neon.tech; Database=neondb; Username=neondb_owner; Password=npg_xPQzB7TGdIa8; SSL Mode=VerifyFull; Channel Binding=Require;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,7 +41,7 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
         await using var transaction = await conn.BeginTransactionAsync();
 
         {
-            await using var writer = await conn.BeginBinaryImportAsync("COPY crime_areas (burglary, date, h3, personal_theft, weapon_crime, bicycle_theft, damage, robbery, shoplifting, violent) FROM STDIN (FORMAT BINARY)");
+            await using var writer = await conn.BeginBinaryImportAsync("COPY crime_areas (burglary, date, h3, personal_theft, weapon_crime, bicycle_theft, damage, robbery, shoplifting, violent, anti_social, drugs, vehicle_crime) FROM STDIN (FORMAT BINARY)");
 
             foreach (var ca in areas)
             {
@@ -56,6 +56,9 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
                 await writer.WriteAsync((long)ca.Robbery, NpgsqlDbType.Bigint);
                 await writer.WriteAsync((long)ca.Shoplifting, NpgsqlDbType.Bigint);
                 await writer.WriteAsync((long)ca.Violent, NpgsqlDbType.Bigint);
+                await writer.WriteAsync((long)ca.AntiSocial, NpgsqlDbType.Bigint);
+                await writer.WriteAsync((long)ca.Drugs, NpgsqlDbType.Bigint);
+                await writer.WriteAsync((long)ca.VehicleCrime, NpgsqlDbType.Bigint);
             }
 
             await writer.CompleteAsync();   
