@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PoliceDataIngest.Context;
 using PoliceDataIngest.Model;
 using PoliceDataIngest.Services;
@@ -6,11 +7,13 @@ using PoliceDataIngest.Services;
 Console.WriteLine("Getting all documented street crimes");
 
 var file = await ApiService.DownloadZip(2025, 06);
-Console.WriteLine("Processing dataset archive");
+Console.WriteLine("Connecting to database");
+var config = ConfigService.Load();
+var context = new PoliceDbContext(config.GetConnectionString("Database")!);
+Console.WriteLine("Getting existing crime areas");
+var existing =  await context.CrimeAreas.Select(area => area.CalculateHashCode()).ToHashSetAsync();
 Console.WriteLine($"Parsing, filtering and writing crimes to database");
 var crimeParser = new ParseService(file, 0, 0);
-var context = new PoliceDbContext();
-var existing =  await context.CrimeAreas.Select(area => area.CalculateHashCode()).ToHashSetAsync();
 Dictionary<int, CrimeArea> newAreas = [];
 DateTime? currentDate = null;
 
@@ -59,3 +62,5 @@ if (newAreas.Count > 0)
 {
     await context.QuickPushCrimeAreas(newAreas.Values.ToList());
 }
+
+file.Delete();

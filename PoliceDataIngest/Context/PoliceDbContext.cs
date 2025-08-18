@@ -10,8 +10,10 @@ namespace PoliceDataIngest.Context;
 
 public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
-    public PoliceDbContext()
+    private string _connectionString;
+    public PoliceDbContext(string connectionString)
     {
+        _connectionString = connectionString;
     }
 
     public PoliceDbContext(DbContextOptions<PoliceDbContext> options)
@@ -20,7 +22,7 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=ep-dark-rain-abo3yryy-pooler.eu-west-2.aws.neon.tech; Database=neondb; Username=neondb_owner; Password=npg_xPQzB7TGdIa8; SSL Mode=VerifyFull; Channel Binding=Require;");
+        => optionsBuilder.UseNpgsql(_connectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,19 +48,19 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
             foreach (var ca in areas)
             {
                 await writer.StartRowAsync();
-                await writer.WriteAsync((long)ca.Burglary, NpgsqlDbType.Bigint);
+                await writer.WriteAsync((long)ca.Burglary, NpgsqlDbType.Integer);
                 await writer.WriteAsync(ca.Date, NpgsqlDbType.TimestampTz);
                 await writer.WriteAsync((long)ca.H3, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.PersonalTheft, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.WeaponCrime, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.BicycleTheft, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.Damage, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.Robbery, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.Shoplifting, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.Violent, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.AntiSocial, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.Drugs, NpgsqlDbType.Bigint);
-                await writer.WriteAsync((long)ca.VehicleCrime, NpgsqlDbType.Bigint);
+                await writer.WriteAsync((long)ca.PersonalTheft, NpgsqlDbType.Integer);
+                await writer.WriteAsync((long)ca.WeaponCrime, NpgsqlDbType.Integer);
+                await writer.WriteAsync((long)ca.BicycleTheft, NpgsqlDbType.Integer);
+                await writer.WriteAsync((long)ca.Damage, NpgsqlDbType.Integer);
+                await writer.WriteAsync((long)ca.Robbery, NpgsqlDbType.Integer);
+                await writer.WriteAsync((long)ca.Shoplifting, NpgsqlDbType.Integer);
+                await writer.WriteAsync((long)ca.Violent, NpgsqlDbType.Integer);
+                await writer.WriteAsync((long)ca.AntiSocial, NpgsqlDbType.Integer);
+                await writer.WriteAsync((long)ca.Drugs, NpgsqlDbType.Integer);
+                await writer.WriteAsync((long)ca.VehicleCrime, NpgsqlDbType.Integer);
             }
 
             await writer.CompleteAsync();   
