@@ -11,7 +11,6 @@ public static class ApiService
         var f = new FileInfo(filePath);
         if (f.Exists)
         {
-            return f;
             Console.WriteLine("File already exists, deleting");
             f.Delete();   
         }
