@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using NpgsqlTypes;
 using PoliceDataIngest.Model;
@@ -10,19 +11,10 @@ namespace PoliceDataIngest.Context;
 
 public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
-    private string _connectionString;
-    public PoliceDbContext(string connectionString)
-    {
-        _connectionString = connectionString;
-    }
-
     public PoliceDbContext(DbContextOptions<PoliceDbContext> options)
         : base(options)
     {
     }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql(_connectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +23,7 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     public DbSet<CrimeArea> CrimeAreas { get; set; }
+    public DbSet<PopulationArea> PopulationAreas { get; set; }
     
     public async Task QuickPushCrimeAreas(List<CrimeArea> areas)
     {
@@ -61,6 +54,32 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
                 await writer.WriteAsync((long)ca.AntiSocial, NpgsqlDbType.Integer);
                 await writer.WriteAsync((long)ca.Drugs, NpgsqlDbType.Integer);
                 await writer.WriteAsync((long)ca.VehicleCrime, NpgsqlDbType.Integer);
+            }
+
+            await writer.CompleteAsync();   
+        }
+
+        await transaction.CommitAsync();
+    }
+    
+    public async Task QuickPushPopAreas(List<PopulationArea> areas)
+    {
+        var conn = (NpgsqlConnection)Database.GetDbConnection();
+        if (conn.State != ConnectionState.Open)
+        {
+            await conn.OpenAsync();
+        }
+
+        await using var transaction = await conn.BeginTransactionAsync();
+
+        {
+            await using var writer = await conn.BeginBinaryImportAsync("COPY pop_areas (h3, population) FROM STDIN (FORMAT BINARY)");
+
+            foreach (var pa in areas)
+            {
+                await writer.StartRowAsync();
+                await writer.WriteAsync((long)pa.H3, NpgsqlDbType.Bigint);
+                await writer.WriteAsync(pa.Population, NpgsqlDbType.Double);
             }
 
             await writer.CompleteAsync();   

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PoliceDataIngest.Context;
@@ -11,9 +12,11 @@ using PoliceDataIngest.Context;
 namespace PoliceDataIngest.Migrations
 {
     [DbContext(typeof(PoliceDbContext))]
-    partial class PoliceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250820140926_population areas")]
+    partial class populationareas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

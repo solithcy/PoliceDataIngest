@@ -10,9 +10,11 @@
 
     <ItemGroup>
       <Folder Include="temp\" />
+      <EmbeddedResource Include="Resources\**\*" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="MaxRev.Gdal.Universal" Version="3.11.3.339" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         <PrivateAssets>all</PrivateAssets>
