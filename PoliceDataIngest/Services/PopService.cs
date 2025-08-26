@@ -64,7 +64,7 @@ public static class PopService
                 double lat = point[0];
                 double lon = point[1];
                 
-                ulong h3  = H3Index.FromPoint(new Point(lon, lat), 8);
+                ulong h3  = H3Index.FromPoint(new Point(lon, lat), 7);
 
                 result[h3] = (result.GetValueOrDefault(h3, 0)) + val; 
             }
