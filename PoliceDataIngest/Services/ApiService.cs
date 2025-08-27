@@ -6,6 +6,7 @@ public static class ApiService
     {
         string tempDir = Path.GetTempPath();
         string downloadUrl = $"https://data.police.uk/data/archive/{year:D4}-{month:D2}.zip";
+        if (year == 0 && month == 0) downloadUrl = "https://data.police.uk/data/archive/latest.zip";
         string filePath = Path.Join(tempDir, $"police-{year:D4}-{month:D2}.zip");
         
         var f = new FileInfo(filePath);

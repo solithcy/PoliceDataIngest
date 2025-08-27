@@ -32,7 +32,7 @@ public static class Program
     private static async Task AddCrimeData()
     {
         Console.WriteLine("Getting all documented street crimes");
-        var file = await ApiService.DownloadZip(2025, 06);
+        var file = await ApiService.DownloadZip(0, 0);
         Console.WriteLine("Connecting to database");
         var factory = new PoliceDbContextFactory();
         var context = factory.CreateDbContext([]);
