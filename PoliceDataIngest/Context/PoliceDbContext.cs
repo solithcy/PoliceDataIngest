@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using NpgsqlTypes;
 using PoliceDataIngest.Model;
 
 namespace PoliceDataIngest.Context;
 
-public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
+public partial class PoliceDbContext : DbContext
 {
     public PoliceDbContext() { } 
     public PoliceDbContext(DbContextOptions<PoliceDbContext> options)

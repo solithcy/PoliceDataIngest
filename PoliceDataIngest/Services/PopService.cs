@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Reflection;
+﻿using System.Reflection;
 using H3;
 using MaxRev.Gdal.Core;
 using OSGeo.GDAL;

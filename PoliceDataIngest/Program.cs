@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using PoliceDataIngest.Context;
-using PoliceDataIngest.Model;
+﻿using PoliceDataIngest.Model;
 using PoliceDataIngest.Services;
 
 public static class Program
