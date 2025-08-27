@@ -22,9 +22,4 @@ public class PopulationArea : IHashable
     {
         return HashCode.Combine(H3);
     }
-
-    public static int CalculateHashCode(ulong h3)
-    {
-        return HashCode.Combine(h3);
-    }
 }

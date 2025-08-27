@@ -96,16 +96,8 @@ public class ParseService
             if (csvAttribute == null) continue;
             int valueIndex = Array.IndexOf(cols, csvAttribute.Name);
             if (valueIndex == -1) throw new UnhandledDeserializeType();
-            string rawValue;
-            try
-            {
-                rawValue = parts[valueIndex].Trim();
-            }
-            catch (IndexOutOfRangeException)
-            {
-                Console.WriteLine("help");
-                throw;
-            }
+
+            var rawValue = parts[valueIndex].Trim();
 
             object convertedValue = csvAttribute.Type.Name switch
             {
