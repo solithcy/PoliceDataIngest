@@ -11,6 +11,7 @@ namespace PoliceDataIngest.Context;
 
 public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
+    public PoliceDbContext() { } 
     public PoliceDbContext(DbContextOptions<PoliceDbContext> options)
         : base(options)
     {
@@ -22,10 +23,10 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-    public DbSet<CrimeArea> CrimeAreas { get; set; }
-    public DbSet<PopulationArea> PopulationAreas { get; set; }
+    public virtual DbSet<CrimeArea> CrimeAreas { get; set; }
+    public virtual DbSet<PopulationArea> PopulationAreas { get; set; }
     
-    public async Task QuickPushCrimeAreas(List<CrimeArea> areas)
+    public virtual async Task QuickPushCrimeAreas(List<CrimeArea> areas)
     {
         var conn = (NpgsqlConnection)Database.GetDbConnection();
         if (conn.State != ConnectionState.Open)
@@ -62,7 +63,7 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
         await transaction.CommitAsync();
     }
     
-    public async Task QuickPushPopAreas(List<PopulationArea> areas)
+    public virtual async Task QuickPushPopAreas(List<PopulationArea> areas)
     {
         var conn = (NpgsqlConnection)Database.GetDbConnection();
         if (conn.State != ConnectionState.Open)
@@ -86,5 +87,11 @@ public partial class PoliceDbContext : Microsoft.EntityFrameworkCore.DbContext
         }
 
         await transaction.CommitAsync();
+    }
+
+    public virtual async Task<HashSet<int>> GetExistingHashSet<T>(DbSet<T> set) 
+        where T : class, IHashable 
+    {
+        return await set.Select(area => area.CalculateHashCode()).ToHashSetAsync();
     }
 }

@@ -5,7 +5,7 @@ namespace PoliceDataIngest.Model;
 
 [Table("pop_areas")]
 [PrimaryKey(nameof(H3))]
-public class PopulationArea
+public class PopulationArea : IHashable
 {
     public PopulationArea(ulong h3)
     {

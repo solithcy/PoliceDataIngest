@@ -8,9 +8,10 @@ public static class Program
 {
     public static void Main(string[] args)
     {
+        var factory = new PoliceDbContextFactory();
         if (args.Contains("--police-data"))
         {
-            var t = AddCrimeData();
+            var t = AddCrimeData(factory);
             t.Wait();
         }
         else
@@ -20,7 +21,7 @@ public static class Program
         
         if (args.Contains("--pop-data"))
         {
-            var t = AddPopulationData();
+            var t = AddPopulationData(factory);
             t.Wait();
         }
         else
@@ -29,15 +30,14 @@ public static class Program
         }
     }
 
-    private static async Task AddCrimeData()
+    public static async Task AddCrimeData(PoliceDbContextFactory factory)
     {
         Console.WriteLine("Getting all documented street crimes");
         var file = await ApiService.DownloadZip(0, 0);
         Console.WriteLine("Connecting to database");
-        var factory = new PoliceDbContextFactory();
         var context = factory.CreateDbContext([]);
         Console.WriteLine("Getting existing crime areas");
-        var existing =  await context.CrimeAreas.Select(area => area.CalculateHashCode()).ToHashSetAsync();
+        var existing =  await context.GetExistingHashSet(context.CrimeAreas);
         Console.WriteLine($"Parsing, filtering and writing crimes to database");
         var crimeParser = new ParseService(file, 0, 0);
         Dictionary<int, CrimeArea> newAreas = [];
@@ -92,13 +92,12 @@ public static class Program
         file.Delete();
     }
     
-    private static async Task AddPopulationData()
+    public static async Task AddPopulationData(PoliceDbContextFactory factory)
     {
         Console.WriteLine("Connecting to database");
-        var factory = new PoliceDbContextFactory();
         var context = factory.CreateDbContext([]);
         Console.WriteLine("Getting existing population areas");
-        var existing =  await context.PopulationAreas.Select(area => area.CalculateHashCode()).ToHashSetAsync();
+        var existing =  await context.GetExistingHashSet(context.PopulationAreas);
         Console.WriteLine("Parsing population geotiff");
         var pops = PopService.ReadPopulations();
         Console.WriteLine("Filtering existing entries");

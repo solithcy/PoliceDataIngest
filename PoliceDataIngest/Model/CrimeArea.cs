@@ -6,7 +6,7 @@ namespace PoliceDataIngest.Model;
 
 [Table("crime_areas")]
 [PrimaryKey(nameof(Date), nameof(H3))]
-public class CrimeArea
+public class CrimeArea : IHashable
 {
     public CrimeArea(ulong h3, DateTime date)
     {

@@ -6,7 +6,7 @@ using PoliceDataIngest.Services;
 
 public class PoliceDbContextFactory : IDesignTimeDbContextFactory<PoliceDbContext>
 {
-    public PoliceDbContext CreateDbContext(string[] args)
+    public virtual PoliceDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<PoliceDbContext>();
         var connectionString = ConfigService.Load().GetConnectionString("Database")!;
